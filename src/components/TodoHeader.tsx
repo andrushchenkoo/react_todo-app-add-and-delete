@@ -40,11 +40,7 @@ export const TodoHeader: React.FC<Props> = props => {
       <button
         type="button"
         className="todoapp__toggle-all"
-        // className={cn('todoapp__toggle-all', {
-        //   active: areAllCompleted,
-        // })}
         data-cy="ToggleAllButton"
-        // onClick={() => handleToggleAllTodos()}
       />
 
       <form onSubmit={onSubmit}>

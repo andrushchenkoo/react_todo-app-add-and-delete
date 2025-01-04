@@ -7,8 +7,8 @@ import { TodoFooter } from './components/TodoFooter';
 import { ErrorNotification } from './components/ErrorNotification';
 import { addTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Error } from './types/Error';
-import { TodoItem } from './components/TodoItem';
 import { Filter } from './types/Filter';
+import { TodoList } from './components/TodoList';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -30,22 +30,22 @@ export const App: React.FC = () => {
   }, []);
 
   const filteredTodos = useMemo(() => {
-    return todos.filter(todo => {
-      if (filter === Filter.All) {
-        return true;
-      }
+    if (filter === Filter.All) {
+      return todos;
+    }
 
+    return todos.filter(todo => {
       return filter === Filter.Completed ? todo.completed : !todo.completed;
     });
   }, [todos, filter]);
 
-  const todosCounter: number = useMemo(() => {
-    return todos.filter(todo => !todo.completed).length;
-  }, [todos]);
-
   const todosCompletedCounter: number = useMemo(() => {
     return todos.filter(todo => todo.completed).length;
   }, [todos]);
+
+  const todosCounter: number = useMemo(() => {
+    return todos.length - todosCompletedCounter;
+  }, [todos, todosCompletedCounter]);
 
   const onAddTodo = async (todoTitle: string) => {
     setTempTodo({ id: 0, title: todoTitle, completed: false, userId: USER_ID });
@@ -81,23 +81,6 @@ export const App: React.FC = () => {
     completedTodos.forEach(todo => onDeleteTodo(todo.id));
   };
 
-  // useEffect(() => {
-  //   setFooterVisible(visibleTodos.length > 0);
-  // }, [visibleTodos]);
-
-  // useEffect(() => {
-  //   setAreAllCompleted(visibleTodos.every(todo => todo.completed));
-  // }, [visibleTodos]);
-
-  // const handleToggleAllTodos = () => {
-  //   setVisibleTodos(prevTodos =>
-  //     prevTodos.map(todo => ({
-  //       ...todo,
-  //       completed: !areAllCompleted,
-  //     })),
-  //   );
-  // };
-
   const handleToggleTodo = (todoId: number) => {
     setTodos((prevTodos: Todo[]): Todo[] =>
       prevTodos.map((todo: Todo) =>
@@ -118,27 +101,15 @@ export const App: React.FC = () => {
           isInputDisabled={!!tempTodo}
         />
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <>
-            <section className="todoapp__main" data-cy="TodoList">
-              {filteredTodos.map(todo => (
-                <TodoItem
-                  key={todo.id}
-                  todo={todo}
-                  onDeleteTodo={onDeleteTodo}
-                  isLoading={loadingIds.includes(todo.id)}
-                  handleToggleTodo={handleToggleTodo}
-                />
-              ))}
-              {tempTodo && (
-                <TodoItem
-                  todo={tempTodo}
-                  onDeleteTodo={onDeleteTodo}
-                  isLoading
-                  handleToggleTodo={handleToggleTodo}
-                />
-              )}
-            </section>
+            <TodoList
+              filteredTodos={filteredTodos}
+              loadingIds={loadingIds}
+              handleToggleTodo={handleToggleTodo}
+              onDeleteTodo={onDeleteTodo}
+              tempTodo={tempTodo}
+            />
             <TodoFooter
               filter={filter}
               setFilter={setFilter}

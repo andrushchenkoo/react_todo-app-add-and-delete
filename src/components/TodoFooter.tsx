@@ -43,29 +43,17 @@ export const TodoFooter: React.FC<Props> = props => {
         ))}
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
-        // className={cn('todoapp__clear-completed', {
-        //   hidden: !filteredTodos.some(todo => todo.completed),
-        // })}
         disabled={todosCompletedCounter === 0}
         data-cy="ClearCompletedButton"
         onClick={() => {
           onClearCompleted();
         }}
-        // disabled={!filteredTodos.some(todo => todo.completed)}
-        // onClick={() => {
-        //   setVisibleTodos(prevTodos =>
-        //     prevTodos.filter(todo => !todo.completed),
-        //   );
-        // }}
       >
         Clear completed
       </button>
     </footer>
   );
 };
-
-// {footerVisible && ()
